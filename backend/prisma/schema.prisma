@@ -1,0 +1,459 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Get a free hosted Postgres database in seconds: `npx create-db`
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum UserRole {
+  ADOPTER
+  SHELTER
+  ADMIN
+}
+
+enum HomeType {
+  APARTMENT
+  HOUSE
+  FARM
+}
+
+enum ActivityLevel {
+  LOW
+  MEDIUM
+  HIGH
+}
+
+enum PetExperience {
+  BEGINNER
+  INTERMEDIATE
+  EXPERIENCED
+}
+
+enum PetSize {
+  SMALL
+  MEDIUM
+  LARGE
+  ANY
+}
+
+enum Gender {
+  MALE
+  FEMALE
+  UNKNOWN
+}
+
+enum SpaceRequirement {
+  SMALL
+  MEDIUM
+  LARGE
+}
+
+enum VerificationStatus {
+  PENDING
+  VERIFIED
+  REJECTED
+}
+
+enum PetStatus {
+  AVAILABLE
+  PENDING
+  ADOPTED
+  REMOVED
+}
+
+enum AdoptionRequestStatus {
+  PENDING
+  ACCEPTED
+  REJECTED
+  CANCELLED
+}
+
+enum ReportStatus {
+  OPEN
+  UNDER_REVIEW
+  RESOLVED
+  DISMISSED
+}
+
+enum ChatType {
+  RECOMMENDATION
+  PET_CARE
+  ADOPTION_ASSISTANT
+}
+
+model User {
+  id           String  @id @default(uuid())
+  name         String
+  email        String  @unique
+  passwordHash String
+  phoneNumber  String?
+
+  role UserRole
+
+  city String?
+
+  profilePicture String?
+
+  lastActiveAt DateTime?
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  preferences UserPreference?
+
+  shelter Shelter?
+
+  pets Pet[]
+
+  adoptionRequests AdoptionRequest[]
+
+  recommendations Recommendation[]
+
+  savedPets SavedPet[]
+
+  chatHistory ChatHistory[]
+
+  notifications Notification[]
+
+  reports Report[]
+
+  sentMessages Message[]
+
+  ownerConversations Conversation[] @relation("OwnerConversations")
+
+  adopterConversations Conversation[] @relation("AdopterConversations")
+}
+
+model UserPreference {
+  id String @id @default(uuid())
+
+  userId String @unique
+
+  homeType HomeType
+
+  activityLevel ActivityLevel
+
+  monthlyBudget Int
+
+  workingHours Int
+
+  hasChildren Boolean
+
+  hasOtherPets Boolean
+
+  petExperience PetExperience
+
+  preferredSpecies String?
+
+  preferredPetSize PetSize
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Shelter {
+  id String @id @default(uuid())
+
+  userId String @unique
+
+  shelterName String
+
+  description String?
+
+  address String?
+
+  city String?
+
+  verificationStatus VerificationStatus @default(PENDING)
+
+  rating Float?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Species {
+  id String @id @default(uuid())
+
+  name String @unique
+
+  description String?
+
+  createdAt DateTime @default(now())
+
+  breeds Breed[]
+
+  pets Pet[]
+}
+
+model Breed {
+  id String @id @default(uuid())
+
+  speciesId String
+
+  name String
+
+  energyLevel ActivityLevel
+
+  noiseLevel ActivityLevel
+
+  groomingLevel ActivityLevel
+
+  spaceRequirement SpaceRequirement
+
+  averageMonthlyCost Int
+
+  childFriendly Boolean
+
+  apartmentFriendly Boolean
+
+  createdAt DateTime @default(now())
+
+  species Species @relation(fields: [speciesId], references: [id], onDelete: Cascade)
+
+  pets Pet[]
+
+  @@unique([speciesId, name])
+}
+
+model Pet {
+  id String @id @default(uuid())
+
+  ownerId String
+
+  speciesId String
+
+  breedId String
+
+  name String
+
+  age Int
+
+  gender Gender
+
+  description String?
+
+  monthlyCost Int?
+
+  vaccinated Boolean
+
+  sterilized Boolean
+
+  status PetStatus @default(AVAILABLE)
+
+  energyLevelOverride ActivityLevel?
+
+  noiseLevelOverride ActivityLevel?
+
+  groomingLevelOverride ActivityLevel?
+
+  spaceRequirementOverride SpaceRequirement?
+
+  apartmentFriendlyOverride Boolean?
+
+  childFriendlyOverride Boolean?
+
+  monthlyCostOverride Int?
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  owner User @relation(fields: [ownerId], references: [id], onDelete: Cascade)
+
+  species Species @relation(fields: [speciesId], references: [id])
+
+  breed Breed @relation(fields: [breedId], references: [id])
+
+  images PetImage[]
+
+  adoptionRequests AdoptionRequest[]
+
+  recommendations Recommendation[]
+
+  savedBy SavedPet[]
+
+  conversations Conversation[]
+  reports       Report[]
+
+  @@index([ownerId])
+  @@index([speciesId])
+  @@index([breedId])
+  @@index([status])
+}
+
+model PetImage {
+  id String @id @default(uuid())
+
+  petId String
+
+  imageUrl String
+
+  uploadedAt DateTime @default(now())
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
+
+model AdoptionRequest {
+  id String @id @default(uuid())
+
+  petId String
+
+  requesterId String
+
+  message String?
+
+  trustScore Int?
+
+  status AdoptionRequestStatus @default(PENDING)
+
+  createdAt DateTime @default(now())
+
+  updatedAt DateTime @updatedAt
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  requester User @relation(fields: [requesterId], references: [id], onDelete: Cascade)
+
+  conversation Conversation?
+}
+
+model Recommendation {
+  id String @id @default(uuid())
+
+  userId String
+
+  petId String
+
+  compatibilityScore Int
+
+  reason String?
+
+  generatedAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, petId])
+}
+
+model SavedPet {
+  id String @id @default(uuid())
+
+  userId String
+
+  petId String
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  @@unique([userId, petId])
+}
+
+model ChatHistory {
+  id String @id @default(uuid())
+
+  userId String
+
+  chatType ChatType
+
+  message String
+
+  response String
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Conversation {
+  id String @id @default(uuid())
+
+  petId             String
+  ownerId           String
+  adopterId         String
+  adoptionRequestId String @unique
+
+  createdAt DateTime @default(now())
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+
+  owner User @relation("OwnerConversations", fields: [ownerId], references: [id], onDelete: Cascade)
+
+  adopter User @relation("AdopterConversations", fields: [adopterId], references: [id], onDelete: Cascade)
+
+  adoptionRequest AdoptionRequest @relation(fields: [adoptionRequestId], references: [id], onDelete: Cascade)
+
+  messages Message[]
+}
+
+model Message {
+  id String @id @default(uuid())
+
+  conversationId String
+  senderId       String
+
+  message String
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  conversation Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  sender User @relation(fields: [senderId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+  @@index([senderId])
+}
+
+model Notification {
+  id String @id @default(uuid())
+
+  userId String
+
+  title String
+
+  message String
+
+  isRead Boolean @default(false)
+
+  createdAt DateTime @default(now())
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Report {
+  id String @id @default(uuid())
+
+  reporterId String
+
+  petId String
+
+  reason String
+
+  status ReportStatus @default(OPEN)
+
+  createdAt DateTime @default(now())
+
+  reporter User @relation(fields: [reporterId], references: [id], onDelete: Cascade)
+
+  pet Pet @relation(fields: [petId], references: [id], onDelete: Cascade)
+}
