@@ -32,3 +32,12 @@ export class ConflictError extends HttpError {
     super(409, message);
   }
 }
+
+export class NotFoundError extends Error {
+  statusCode = 404;
+
+  constructor(message = 'Resource not found') {
+    super(message);
+    this.name = 'NotFoundError';
+  }
+}

@@ -1,0 +1,120 @@
+{
+  "client": "Thunder Client",
+  "collectionName": "PetMatch AI - Pets",
+  "dateExported": "2026-07-18T00:00:00.000Z",
+  "version": "1.1",
+  "folders": [
+    { "_id": "folder-auth", "name": "Auth", "containerId": "" },
+    { "_id": "folder-pets", "name": "Pets", "containerId": "" }
+  ],
+  "requests": [
+    {
+      "_id": "req-register",
+      "colId": "petmatch-pets",
+      "containerId": "folder-auth",
+      "name": "Register",
+      "url": "{{baseUrl}}/auth/register",
+      "method": "POST",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"name\": \"Alice Smith\",\n  \"email\": \"alice@example.com\",\n  \"password\": \"password123\"\n}"
+      }
+    },
+    {
+      "_id": "req-login",
+      "colId": "petmatch-pets",
+      "containerId": "folder-auth",
+      "name": "Login",
+      "url": "{{baseUrl}}/auth/login",
+      "method": "POST",
+      "headers": [
+        { "name": "Content-Type", "value": "application/json" }
+      ],
+      "body": {
+        "type": "json",
+        "raw": "{\n  \"email\": \"alice@example.com\",\n  \"password\": \"password123\"\n}"
+      }
+    },
+    {
+      "_id": "req-create-pet",
+      "colId": "petmatch-pets",
+      "containerId": "folder-pets",
+      "name": "Create Pet (multipart with images)",
+      "url": "{{baseUrl}}/pets",
+      "method": "POST",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{token}}" }
+      ],
+      "body": {
+        "type": "formdata",
+        "form": [
+          { "name": "name", "value": "Rex" },
+          { "name": "species", "value": "DOG" },
+          { "name": "breed", "value": "Labrador" },
+          { "name": "ageMonths", "value": "24" },
+          { "name": "gender", "value": "MALE" },
+          { "name": "size", "value": "MEDIUM" },
+          { "name": "description", "value": "Friendly and energetic dog" },
+          { "name": "location", "value": "Chicago" },
+          { "name": "images", "type": "file", "value": "" },
+          { "name": "images", "type": "file", "value": "" }
+        ]
+      }
+    },
+    {
+      "_id": "req-get-all-pets",
+      "colId": "petmatch-pets",
+      "containerId": "folder-pets",
+      "name": "Get All Pets (pagination + filter + search)",
+      "url": "{{baseUrl}}/pets?page=1&limit=10&species=DOG&gender=MALE&size=MEDIUM&location=Chicago&minAgeMonths=6&maxAgeMonths=60&search=friendly&sortBy=createdAt&sortOrder=desc",
+      "method": "GET",
+      "headers": []
+    },
+    {
+      "_id": "req-get-pet-by-id",
+      "colId": "petmatch-pets",
+      "containerId": "folder-pets",
+      "name": "Get Pet By ID",
+      "url": "{{baseUrl}}/pets/{{petId}}",
+      "method": "GET",
+      "headers": []
+    },
+    {
+      "_id": "req-update-pet",
+      "colId": "petmatch-pets",
+      "containerId": "folder-pets",
+      "name": "Update Pet (owner or ADMIN only)",
+      "url": "{{baseUrl}}/pets/{{petId}}",
+      "method": "PATCH",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{token}}" }
+      ],
+      "body": {
+        "type": "formdata",
+        "form": [
+          { "name": "description", "value": "Updated description: good with kids" },
+          { "name": "location", "value": "Evanston" },
+          { "name": "images", "type": "file", "value": "" }
+        ]
+      }
+    },
+    {
+      "_id": "req-delete-pet",
+      "colId": "petmatch-pets",
+      "containerId": "folder-pets",
+      "name": "Delete Pet (owner or ADMIN only)",
+      "url": "{{baseUrl}}/pets/{{petId}}",
+      "method": "DELETE",
+      "headers": [
+        { "name": "Authorization", "value": "Bearer {{token}}" }
+      ]
+    }
+  ],
+  "settings": {
+    "options": {},
+    "headers": []
+  }
+}

@@ -9,6 +9,9 @@ interface EnvConfig {
   databaseUrl: string;
   jwtSecret: string;
   jwtExpiresIn: string;
+  cloudinaryCloudName: string;
+  cloudinaryApiKey: string;
+  cloudinaryApiSecret: string;
 }
 
 function getEnvVar(key: string, fallback?: string): string {
@@ -26,6 +29,9 @@ export const env: EnvConfig = {
   databaseUrl: getEnvVar('DATABASE_URL'),
   jwtSecret: getEnvVar('JWT_SECRET'),
   jwtExpiresIn: getEnvVar('JWT_EXPIRES_IN', '7d'),
+  cloudinaryCloudName: getEnvVar('CLOUDINARY_CLOUD_NAME'),
+  cloudinaryApiKey: getEnvVar('CLOUDINARY_API_KEY'),
+  cloudinaryApiSecret: getEnvVar('CLOUDINARY_API_SECRET'),
 };
 
 export const isProduction = env.nodeEnv === 'production';
