@@ -1,12 +1,13 @@
 import { Router } from 'express';
 import healthRouter from './health.route';
+import authRouter from './auth.route';
 
 const router = Router();
 
-// GET /  -> health check
+// GET /
 router.use('/', healthRouter);
 
-// Future routers (pets, auth, matching, etc.) will be mounted here, e.g.:
-// router.use('/pets', petRouter);
+// Auth routes
+router.use('/auth', authRouter);
 
 export default router;

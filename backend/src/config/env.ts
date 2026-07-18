@@ -7,6 +7,8 @@ interface EnvConfig {
   port: number;
   corsOrigin: string;
   databaseUrl: string;
+  jwtSecret: string;
+  jwtExpiresIn: string;
 }
 
 function getEnvVar(key: string, fallback?: string): string {
@@ -22,6 +24,8 @@ export const env: EnvConfig = {
   port: Number(getEnvVar('PORT', '5000')),
   corsOrigin: getEnvVar('CORS_ORIGIN', '*'),
   databaseUrl: getEnvVar('DATABASE_URL'),
+  jwtSecret: getEnvVar('JWT_SECRET'),
+  jwtExpiresIn: getEnvVar('JWT_EXPIRES_IN', '7d'),
 };
 
 export const isProduction = env.nodeEnv === 'production';
