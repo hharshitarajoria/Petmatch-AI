@@ -17,8 +17,17 @@ export function validate(schema: ZodObject<any>) {
         params: req.params,
       });
 
-      if (parsed.body) req.body = parsed.body;
+      if (parsed.body) {
+        req.body = parsed.body;
+      }
 
+      if (parsed.query) {
+        req.query = parsed.query as Request['query'];
+      }
+
+      if (parsed.params) {
+        Object.assign(req.params, parsed.params);
+      }
       next();
     } catch (error) {
       if (error instanceof ZodError) {

@@ -27,9 +27,12 @@ export class ForbiddenError extends HttpError {
   }
 }
 
-export class ConflictError extends HttpError {
+export class ConflictError extends Error {
+  statusCode = 409;
+
   constructor(message = 'Conflict') {
-    super(409, message);
+    super(message);
+    this.name = 'ConflictError';
   }
 }
 
@@ -41,3 +44,4 @@ export class NotFoundError extends Error {
     this.name = 'NotFoundError';
   }
 }
+
