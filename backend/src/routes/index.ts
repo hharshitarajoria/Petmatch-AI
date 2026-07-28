@@ -4,6 +4,7 @@ import authRouter from './auth.route';
 import petRouter from './pet.route';
 import speciesRouter from './species.route';
 import breedRouter from './breed.route';
+import userPreferenceRouter from './userPreference.route';
 
 const router = Router();
 
@@ -16,6 +17,8 @@ router.use('/pets', petRouter);
 router.use('/species', speciesRouter);
 
 router.use('/breeds', breedRouter);
+
+router.use('/preferences', userPreferenceRouter);
 
 
 export default router;
