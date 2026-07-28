@@ -27,21 +27,15 @@ export class ForbiddenError extends HttpError {
   }
 }
 
-export class ConflictError extends Error {
-  statusCode = 409;
-
+export class ConflictError extends HttpError {
   constructor(message = 'Conflict') {
-    super(message);
-    this.name = 'ConflictError';
+    super(409, message);
   }
 }
 
-export class NotFoundError extends Error {
-  statusCode = 404;
-
+export class NotFoundError extends HttpError {
   constructor(message = 'Resource not found') {
-    super(message);
-    this.name = 'NotFoundError';
+    super(404, message);
   }
 }
 
