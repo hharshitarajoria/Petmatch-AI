@@ -5,6 +5,11 @@ import DashboardLayout from "@/layouts/DashboardLayout";
 import ProtectedRoute from "@/routes/ProtectedRoute";
 import PlaceholderPage from "@/pages/PlaceholderPage";
 import LandingPage from "@/pages/LandingPage";
+import BrowsePetsPage from "@/pages/BrowsePetsPage";
+import PetDetailsPage from "@/pages/PetDetailsPage";
+import LoginPage from "@/pages/LoginPage";
+import RegisterPage from "@/pages/RegisterPage";
+import DashboardPage from "@/pages/DashboardPage";
 import { ROUTES } from "@/constants/routes";
 
 const router = createBrowserRouter([
@@ -12,15 +17,15 @@ const router = createBrowserRouter([
     element: <MainLayout />,
     children: [
       { path: ROUTES.HOME, element: <LandingPage /> },
-      { path: ROUTES.PETS, element: <PlaceholderPage title="Browse Pets" /> },
-      { path: ROUTES.PET_DETAILS, element: <PlaceholderPage title="Pet Details" /> },
+      { path: ROUTES.PETS, element: <BrowsePetsPage /> },
+      { path: ROUTES.PET_DETAILS, element: <PetDetailsPage /> },
     ],
   },
   {
     element: <AuthLayout />,
     children: [
-      { path: ROUTES.LOGIN, element: <PlaceholderPage title="Login" /> },
-      { path: ROUTES.REGISTER, element: <PlaceholderPage title="Register" /> },
+      { path: ROUTES.LOGIN, element: <LoginPage /> },
+      { path: ROUTES.REGISTER, element: <RegisterPage /> },
     ],
   },
   {
@@ -29,7 +34,7 @@ const router = createBrowserRouter([
       {
         element: <DashboardLayout />,
         children: [
-          { path: ROUTES.DASHBOARD, element: <PlaceholderPage title="Dashboard" /> },
+          { path: ROUTES.DASHBOARD, element: <DashboardPage /> },
           { path: ROUTES.SAVED_PETS, element: <PlaceholderPage title="Saved Pets" /> },
           { path: ROUTES.RECOMMENDATIONS, element: <PlaceholderPage title="Recommendations" /> },
           { path: ROUTES.ADOPTION_REQUESTS, element: <PlaceholderPage title="Adoption Requests" /> },
