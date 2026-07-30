@@ -12,6 +12,7 @@ import conversationRouter from './conversation.route';
 import messageRouter from './message.route';
 import notificationRouter from './notification.route';
 import reportRouter from './report.route';
+import chatHistoryRouter from "./chatHistory.route";
 
 const router = Router();
 
@@ -38,6 +39,8 @@ router.use('/conversations', conversationRouter);
 router.use('/messages', messageRouter);
 
 router.use('/notifications', notificationRouter);
+
+router.use("/chat-history", chatHistoryRouter);
 
 router.use('/reports', reportRouter);
 export default router;
