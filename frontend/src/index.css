@@ -1,0 +1,68 @@
+@import "tailwindcss";
+
+/*
+ * PetMatch AI design tokens.
+ *
+ * Palette is intentionally sage/gold, not the generic cream+terracotta or
+ * near-black+neon defaults — it's built around the shelter/adoption world
+ * (paper is a cool sage-white, not a warm cream) with a warm "gold seal"
+ * accent standing in for the idea of an approved match.
+ *
+ * Type system pairs a technical display face (Space Grotesk, for the "AI"
+ * side of the product) with a warm serif body face (Source Serif 4, for the
+ * "adoption" side) and a monospace utility face (JetBrains Mono) reserved
+ * for data: stats, percentages, and the match-ring signature element.
+ */
+@theme {
+  /* Color */
+  --color-paper: #eff4ee;
+  --color-paper-dim: #e4ebe1;
+  --color-ink: #1b231d;
+  --color-ink-soft: #4a564c;
+  --color-moss: #3f5847;
+  --color-moss-dark: #2c4034;
+  --color-moss-deep: #202b24;
+  --color-gold: #e8a33d;
+  --color-gold-soft: #f2c384;
+  --color-leaf: #7fa66b;
+  --color-line: #dce3d8;
+
+  /* Type */
+  --font-display: "Space Grotesk", ui-sans-serif, system-ui, sans-serif;
+  --font-body: "Source Serif 4", ui-serif, Georgia, serif;
+  --font-mono: "JetBrains Mono", ui-monospace, SFMono-Regular, monospace;
+
+  /* Shadows: soft, low-contrast — "subtle" per brief */
+  --shadow-soft: 0 1px 2px rgba(27, 35, 29, 0.04), 0 8px 24px -12px rgba(27, 35, 29, 0.16);
+  --shadow-lifted: 0 4px 8px rgba(27, 35, 29, 0.05), 0 24px 48px -16px rgba(27, 35, 29, 0.24);
+}
+
+html,
+body,
+#root {
+  height: 100%;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+}
+
+::selection {
+  background-color: var(--color-gold-soft);
+  color: var(--color-ink);
+}
+
+/* Respect reduced-motion preferences everywhere. */
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
