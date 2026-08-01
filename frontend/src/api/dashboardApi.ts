@@ -51,15 +51,54 @@ function mapActivityRecord(record: ActivityApiRecord): ActivityItem {
 }
 
 export async function fetchDashboardStats(): Promise<DashboardStats> {
-  const { data } = await axiosClient.get<ApiSuccessResponse<DashboardStatsApiRecord>>(
-    "/dashboard/stats"
-  );
-  return mapDashboardStats(data.data);
+  try {
+    const [savedPetsRes, recommendationsRes, adoptionRequestsRes] = await Promise.allSettled([
+      axiosClient.get("/saved-pets"),
+      axiosClient.get("/recommendations"),
+      axiosClient.get("/adoption-requests/my"),
+    ]);
+
+    const savedPetsCount =
+      savedPetsRes.status === "fulfilled" && Array.isArray(savedPetsRes.value.data?.data)
+        ? savedPetsRes.value.data.data.length
+        : 0;
+
+    const recommendationsCount =
+      recommendationsRes.status === "fulfilled" && Array.isArray(recommendationsRes.value.data?.data)
+        ? recommendationsRes.value.data.data.length
+        : 0;
+
+    const adoptionRequestsCount =
+      adoptionRequestsRes.status === "fulfilled" && Array.isArray(adoptionRequestsRes.value.data?.data)
+        ? adoptionRequestsRes.value.data.data.length
+        : 0;
+
+    return {
+      savedPetsCount,
+      recommendationsCount,
+      adoptionRequestsCount,
+    };
+  } catch {
+    return {
+      savedPetsCount: 0,
+      recommendationsCount: 0,
+      adoptionRequestsCount: 0,
+    };
+  }
 }
 
 export async function fetchRecentActivity(): Promise<ActivityItem[]> {
-  const { data } = await axiosClient.get<ApiSuccessResponse<ActivityApiRecord[]>>(
-    "/dashboard/activity"
-  );
-  return data.data.map(mapActivityRecord);
+  try {
+    const { data } = await axiosClient.get<ApiSuccessResponse<ActivityApiRecord[]>>("/notifications", {
+      params: { take: 5 },
+    });
+
+    if (!data.data || !Array.isArray(data.data)) {
+      return [];
+    }
+
+    return data.data.map(mapActivityRecord);
+  } catch {
+    return [];
+  }
 }

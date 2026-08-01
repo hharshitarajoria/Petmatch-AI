@@ -13,7 +13,7 @@ export interface PetPreview {
 
 export type PetGender = "MALE" | "FEMALE" | "UNKNOWN";
 export type PetStatus = "AVAILABLE" | "PENDING" | "ADOPTED" | "REMOVED";
-export type PetSortOption = "newest" | "oldest" | "age";
+export type PetSortOption = "createdAt" | "age" | "name";
 
 /** Clean, UI-ready shape used by PetCard/PetGrid for a real listing. */
 export interface PetListItem {
@@ -101,18 +101,20 @@ export interface PetApiRecord {
   breed?: { id: string; name: string };
   images?: { id?: string; imageUrl: string }[];
   owner?: {
-    id?: string;
-    fullName?: string | null;
-    email?: string | null;
-    phone?: string | null;
-    city?: string | null;
+  id?: string;
+  name?: string | null;
+  email?: string | null;
+  phoneNumber?: string | null;
+  city?: string | null;
   } | null;
 }
 
 export interface PaginatedPetsApiResponse {
-  items: PetApiRecord[];
-  total: number;
-  page: number;
-  limit: number;
-  totalPages: number;
+  data: PetApiRecord[];
+  pagination: {
+    page: number;
+    limit: number;
+    totalItems: number;
+    totalPages: number;
+  };
 }

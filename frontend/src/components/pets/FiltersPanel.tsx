@@ -43,6 +43,8 @@ export default function FiltersPanel({
         options={speciesSelectOptions}
         value={filters.speciesId}
         onChange={(event) => {
+          console.log("Species selected:", event.target.value);
+
           onFilterChange("speciesId", event.target.value);
           onFilterChange("breedId", "");
         }}

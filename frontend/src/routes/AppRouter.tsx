@@ -10,6 +10,7 @@ import PetDetailsPage from "@/pages/PetDetailsPage";
 import LoginPage from "@/pages/LoginPage";
 import RegisterPage from "@/pages/RegisterPage";
 import DashboardPage from "@/pages/DashboardPage";
+import SavedPetsPage from "@/pages/SavedPetsPage";
 import { ROUTES } from "@/constants/routes";
 
 const router = createBrowserRouter([
@@ -35,7 +36,7 @@ const router = createBrowserRouter([
         element: <DashboardLayout />,
         children: [
           { path: ROUTES.DASHBOARD, element: <DashboardPage /> },
-          { path: ROUTES.SAVED_PETS, element: <PlaceholderPage title="Saved Pets" /> },
+          { path: ROUTES.SAVED_PETS, element: <SavedPetsPage /> },
           { path: ROUTES.RECOMMENDATIONS, element: <PlaceholderPage title="Recommendations" /> },
           { path: ROUTES.ADOPTION_REQUESTS, element: <PlaceholderPage title="Adoption Requests" /> },
           { path: ROUTES.CONVERSATIONS, element: <PlaceholderPage title="Conversations" /> },

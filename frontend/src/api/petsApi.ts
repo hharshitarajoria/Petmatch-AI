@@ -56,30 +56,34 @@ function mapPetDetailsRecord(record: PetApiRecord): PetDetailsItem {
     childFriendly: record.childFriendlyOverride ?? null,
     images: record.images?.map((img) => img.imageUrl) ?? [],
     owner: record.owner
-      ? {
-          id: record.owner.id ?? "shelter",
-          fullName: record.owner.fullName ?? null,
-          email: record.owner.email ?? null,
-          phone: record.owner.phone ?? null,
-          city: record.owner.city ?? null,
-        }
-      : null,
+  ? {
+      id: record.owner.id ?? "shelter",
+      fullName: record.owner.name ?? null,
+      email: record.owner.email ?? null,
+      phone: record.owner.phoneNumber ?? null,
+      city: record.owner.city ?? null,
+    }
+  : null,
   };
 }
 
 function buildPetsQueryParams(filters: PetFilters, pageSize: number) {
+  const sortOrder =
+    filters.sortBy === "name" ? "asc" : filters.sortBy === "age" ? "asc" : "desc";
+
   const params: Record<string, string | number> = {
     page: filters.page,
     limit: pageSize,
     sortBy: filters.sortBy,
+    sortOrder,
   };
 
   if (filters.search.trim()) params.search = filters.search.trim();
   if (filters.speciesId) params.speciesId = filters.speciesId;
   if (filters.breedId) params.breedId = filters.breedId;
   if (filters.gender) params.gender = filters.gender;
-  if (filters.minAge) params.minAge = filters.minAge;
-  if (filters.maxAge) params.maxAge = filters.maxAge;
+  if (filters.minAge !== "") params.minAge = Number(filters.minAge);
+  if (filters.maxAge !== "") params.maxAge = Number(filters.maxAge);
 
   return params;
 }
@@ -90,12 +94,12 @@ export async function fetchPets(filters: PetFilters, pageSize: number): Promise<
   });
 
   return {
-    items: data.data.items.map(mapPetRecord),
-    total: data.data.total,
-    page: data.data.page,
-    limit: data.data.limit,
-    totalPages: data.data.totalPages,
-  };
+  items: data.data.data.map(mapPetRecord),
+  total: data.data.pagination.totalItems,
+  page: data.data.pagination.page,
+  limit: data.data.pagination.limit,
+  totalPages: data.data.pagination.totalPages,
+};
 }
 
 export async function fetchPetById(id: string): Promise<PetDetailsItem> {

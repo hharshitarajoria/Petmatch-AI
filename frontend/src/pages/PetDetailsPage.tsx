@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { useParams, Link } from "react-router-dom";
+import { useParams, Link, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
 import {
   ArrowLeft,
@@ -25,6 +25,9 @@ import Container from "@/components/common/Container";
 import ErrorState from "@/components/common/ErrorState";
 import Skeleton from "@/components/common/Skeleton";
 import { usePet } from "@/hooks/usePet";
+import { useAppSelector } from "@/app/hooks";
+import { useSavePet, useSavedPets } from "@/hooks/useSavedPets";
+import { useRemoveSavedPet } from "@/hooks/useRemoveSavedPet";
 import { getApiErrorMessage } from "@/api/apiError";
 import { ROUTES } from "@/constants/routes";
 import type { PetGender, PetStatus } from "@/types/pet.types";
@@ -70,10 +73,19 @@ function PetDetailsSkeleton() {
 }
 
 export default function PetDetailsPage() {
+  const navigate = useNavigate();
+  const token = useAppSelector((state) => state.auth.token);
   const { petId } = useParams<{ petId: string }>();
   const { data: pet, isLoading, isError, error, refetch } = usePet(petId);
   const [selectedImageIndex, setSelectedImageIndex] = useState(0);
-  const [isSaved, setIsSaved] = useState(false);
+
+  const savedPetsQuery = useSavedPets(1);
+  const savePetMutation = useSavePet();
+  const removePetMutation = useRemoveSavedPet();
+
+  const isSaved = Boolean(
+    token && petId && savedPetsQuery.data?.items.some((item) => item.petId === petId)
+  );
 
   if (isLoading) {
     return (
@@ -148,7 +160,18 @@ export default function PetDetailsPage() {
 
               <button
                 type="button"
-                onClick={() => setIsSaved(!isSaved)}
+                onClick={() => {
+                  if (!token) {
+                    navigate(ROUTES.LOGIN);
+                    return;
+                  }
+                  if (isSaved) {
+                    removePetMutation.mutate(pet.id);
+                  } else {
+                    savePetMutation.mutate(pet.id);
+                  }
+                }}
+                disabled={savePetMutation.isPending || removePetMutation.isPending}
                 aria-label={isSaved ? `Unsave ${pet.name}` : `Save ${pet.name}`}
                 className={`absolute right-4 top-4 flex h-11 w-11 items-center justify-center rounded-full backdrop-blur-md transition-all shadow-lifted ${
                   isSaved

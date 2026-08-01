@@ -24,10 +24,18 @@ export default function BrowsePetsPage() {
   const [isFilterDrawerOpen, setIsFilterDrawerOpen] = useState(false);
 
   const filters = useMemo(() => parseFiltersFromSearchParams(searchParams), [searchParams]);
-
+  console.log("filters", filters);
+  
   const speciesQuery = useSpecies();
   const breedsQuery = useBreeds();
   const petsQuery = usePets(filters);
+  
+  console.log("speciesQuery =", speciesQuery);
+  console.log("Array.isArray(species)", Array.isArray(speciesQuery.data));
+
+  console.log("breedsQuery.data", breedsQuery.data);
+  console.log("Array.isArray(breeds)", Array.isArray(breedsQuery.data));
+
 
   function updateFilters(next: PetFilters) {
     setSearchParams(filtersToSearchParams(next));

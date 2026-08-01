@@ -1,7 +1,7 @@
 import { DEFAULT_PET_FILTERS } from "@/constants/petFilters";
 import type { PetFilters, PetGender, PetSortOption } from "@/types/pet.types";
 
-const VALID_SORTS: PetSortOption[] = ["newest", "oldest", "age"];
+const VALID_SORTS: PetSortOption[] = ["createdAt", "name", "age"];
 const VALID_GENDERS: PetGender[] = ["MALE", "FEMALE", "UNKNOWN"];
 
 export function parseFiltersFromSearchParams(searchParams: URLSearchParams): PetFilters {

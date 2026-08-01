@@ -9,7 +9,7 @@ export const DEFAULT_PET_FILTERS: PetFilters = {
   gender: "",
   minAge: "",
   maxAge: "",
-  sortBy: "newest",
+  sortBy: "createdAt",
   page: 1,
 };
 
@@ -21,7 +21,7 @@ export const GENDER_OPTIONS: { value: PetGender | ""; label: string }[] = [
 ];
 
 export const SORT_OPTIONS: { value: PetSortOption; label: string }[] = [
-  { value: "newest", label: "Newest" },
-  { value: "oldest", label: "Oldest" },
+  { value: "createdAt", label: "Newest" },
   { value: "age", label: "Age" },
+  { value: "name", label: "Name (A–Z)" },
 ];

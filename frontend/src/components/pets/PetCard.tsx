@@ -1,7 +1,10 @@
 import { motion } from "framer-motion";
 import { Heart, MapPin, PawPrint, ArrowUpRight, Mars, Venus } from "lucide-react";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { ROUTES } from "@/constants/routes";
+import { useAppSelector } from "@/app/hooks";
+import { useSavePet, useSavedPets } from "@/hooks/useSavedPets";
+import { useRemoveSavedPet } from "@/hooks/useRemoveSavedPet";
 import type { PetGender, PetListItem, PetStatus } from "@/types/pet.types";
 
 interface PetCardProps {
@@ -27,14 +30,17 @@ const GENDER_ICONS: Partial<Record<PetGender, typeof Mars>> = {
   FEMALE: Venus,
 };
 
-/**
- * Browse Pets' dedicated card. Deliberately separate from
- * components/common/PetCard.tsx (which is built around a recommendation
- * MatchRing and requires PetPreview.matchPercentage) — Browse Pets has no
- * compatibility score to show, so it gets its own component with a status
- * badge instead, rather than forcing one component to serve both shapes.
- */
 export default function PetCard({ pet }: PetCardProps) {
+  const navigate = useNavigate();
+  const token = useAppSelector((state) => state.auth.token);
+  const savedPetsQuery = useSavedPets(1);
+  const savePetMutation = useSavePet();
+  const removePetMutation = useRemoveSavedPet();
+
+  const isSaved = Boolean(
+    token && savedPetsQuery.data?.items.some((item) => item.petId === pet.id)
+  );
+
   const detailsPath = ROUTES.PET_DETAILS.replace(":petId", pet.id);
   const GenderIcon = GENDER_ICONS[pet.gender];
 
@@ -62,10 +68,26 @@ export default function PetCard({ pet }: PetCardProps) {
 
         <button
           type="button"
-          aria-label={`Save ${pet.name}`}
-          className="absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full bg-ink/20 text-paper backdrop-blur-md transition-colors hover:bg-ink/35"
+          onClick={(e) => {
+            e.preventDefault();
+            e.stopPropagation();
+            if (!token) {
+              navigate(ROUTES.LOGIN);
+              return;
+            }
+            if (isSaved) {
+              removePetMutation.mutate(pet.id);
+            } else {
+              savePetMutation.mutate(pet.id);
+            }
+          }}
+          disabled={savePetMutation.isPending || removePetMutation.isPending}
+          aria-label={isSaved ? `Unsave ${pet.name}` : `Save ${pet.name}`}
+          className={`absolute right-3 top-3 flex h-9 w-9 items-center justify-center rounded-full backdrop-blur-md transition-colors ${
+            isSaved ? "bg-rose-500 text-white" : "bg-ink/20 text-paper hover:bg-ink/35"
+          }`}
         >
-          <Heart className="h-4 w-4" />
+          <Heart className={`h-4 w-4 ${isSaved ? "fill-current" : ""}`} />
         </button>
 
         <div className="absolute -bottom-4 right-4">
