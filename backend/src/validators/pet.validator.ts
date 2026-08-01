@@ -99,6 +99,8 @@ export const petIdParamsSchema = z.object({
   }),
 });
 
+const emptyToUndefined = (val: unknown) => (val === '' ? undefined : val);
+
 // --- Pagination + filtering (GET /pets?...) ---
 export const getPetsQuerySchema = z.object({
   query: z.object({
@@ -106,15 +108,15 @@ export const getPetsQuerySchema = z.object({
 
     limit: z.coerce.number().int().min(1).max(50).default(10),
 
-    speciesId: z.string().uuid().optional(),
+    speciesId: z.preprocess(emptyToUndefined, z.string().uuid().optional()),
 
-    breedId: z.string().uuid().optional(),
+    breedId: z.preprocess(emptyToUndefined, z.string().uuid().optional()),
 
-    gender: z.enum(petGenderValues).optional(),
+    gender: z.preprocess(emptyToUndefined, z.enum(petGenderValues).optional()),
 
-    minAge: z.coerce.number().int().min(0).optional(),
+    minAge: z.preprocess(emptyToUndefined, z.coerce.number().int().min(0).optional()),
 
-    maxAge: z.coerce.number().int().optional(),
+    maxAge: z.preprocess(emptyToUndefined, z.coerce.number().int().min(0).optional()),
 
     search: z.string().trim().max(200).optional(),
 

@@ -122,12 +122,33 @@ export async function getAllPets(query: GetPetsQuery): Promise<PaginatedPets> {
 
   const [data, totalItems] = await Promise.all([
     prisma.pet.findMany({
-      where,
-      orderBy: { [sortBy]: sortOrder } as Prisma.PetOrderByWithRelationInput,
-      skip: (page - 1) * limit,
-      take: limit,
-    }),
-    prisma.pet.count({ where }),
+  where,
+  include: {
+    species: true,
+    breed: true,
+    owner: {
+      select: {
+        id: true,
+        name: true,
+        email: true,
+        phoneNumber: true,
+        city: true,
+      },
+    },
+    images: {
+      select: {
+        id: true,
+        imageUrl: true,
+      },
+    },
+  },
+  orderBy: {
+    [sortBy]: sortOrder,
+  } as Prisma.PetOrderByWithRelationInput,
+  skip: (page - 1) * limit,
+  take: limit,
+}),
+prisma.pet.count({ where }),
   ]);
 
   return {
@@ -141,8 +162,35 @@ export async function getAllPets(query: GetPetsQuery): Promise<PaginatedPets> {
   };
 }
 
-export async function getPetById(id: string): Promise<Pet> {
-  return findPetOrThrow(id);
+export async function getPetById(id: string) {
+  const pet = await prisma.pet.findUnique({
+    where: { id },
+    include: {
+      species: true,
+      breed: true,
+      owner: {
+        select: {
+          id: true,
+          name: true,
+          email: true,
+          phoneNumber: true,
+          city: true,
+        },
+      },
+      images: {
+        select: {
+          id: true,
+          imageUrl: true,
+        },
+      },
+    },
+  });
+
+  if (!pet) {
+    throw new NotFoundError("Pet not found");
+  }
+
+  return pet;
 }
 
 export async function updatePet(

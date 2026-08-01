@@ -204,7 +204,12 @@ export async function generateRecommendationsForUser(userId: string): Promise<Re
 
   const availablePets = await prisma.pet.findMany({
     where: { status: 'AVAILABLE' },
-    include: { breed: true, species: true },
+    include: {
+      breed: true,
+      species: true,
+      images: { select: { id: true, imageUrl: true } },
+      owner: { select: { id: true, name: true, email: true, phoneNumber: true, city: true } },
+    },
   });
 
   const scored = availablePets.map((pet) => ({
@@ -234,7 +239,16 @@ export async function getMyRecommendations(userId: string): Promise<Recommendati
   const recommendations = await prisma.recommendation.findMany({
     where: { userId },
     orderBy: { compatibilityScore: 'desc' },
-    include: { pet: { include: { breed: true, species: true } } },
+    include: {
+      pet: {
+        include: {
+          breed: true,
+          species: true,
+          images: { select: { id: true, imageUrl: true } },
+          owner: { select: { id: true, name: true, email: true, phoneNumber: true, city: true } },
+        },
+      },
+    },
   });
 
   return recommendations;

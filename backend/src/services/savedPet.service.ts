@@ -42,6 +42,15 @@ export async function getMySavedPets(userId: string): Promise<SavedPetWithDetail
   return prisma.savedPet.findMany({
     where: { userId },
     orderBy: { createdAt: 'desc' },
-    include: { pet: { include: { breed: true, species: true } } },
+    include: {
+      pet: {
+        include: {
+          breed: true,
+          species: true,
+          images: { select: { id: true, imageUrl: true } },
+          owner: { select: { id: true, name: true, email: true, phoneNumber: true, city: true } },
+        },
+      },
+    },
   });
 }
